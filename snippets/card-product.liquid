@@ -71,7 +71,7 @@
                 src="{{ card_product.featured_media | image_url: width: 533 }}"
                 sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
                 alt="{{ card_product.featured_media.alt | escape }}"
-                class="motion-reduce identity_{{ product.id }}_image"
+                class="motion-reduce identity_{{ card_product.id }}_image"
                 {% unless lazy_load == false %}
                   loading="lazy"
                 {% endunless %}
@@ -94,7 +94,7 @@
                   src="{{ card_product.media[1] | image_url: width: 533 }}"
                   sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
                   alt=""
-                  class="motion-reduce"
+                  class="motion-reduce identity_{{ card_product.id }}_image"
                   loading="lazy"
                   width="{{ card_product.media[1].width }}"
                   height="{{ card_product.media[1].height }}"
@@ -420,8 +420,12 @@
           (document.getElementsByClassName(`identity_{{ card_product.id }}_${selected_variant.option2}`)?.[0]?.style || {}).border = "2px solid black";
           (document.getElementsByClassName(`identity_{{ card_product.id }}_${selected_variant.option3}`)?.[0]?.style || {}).border = "2px solid black";
           document.querySelector(`.identity_{{ card_product.id }}_price`).innerHTML = `${(selected_variant.price/100).toFixed(2)}`;
-          if (document.querySelector(`.identity_{{ card_product.id }}_image`) && selected_variant.featured_image)  
-            document.querySelector(`.identity_{{ card_product.id }}_image`).innerHTML = selected_variant.featured_image.src;
+
+          if (document.querySelector(`.identity_{{ card_product.id }}_image`) && selected_variant.featured_image) {
+            document.querySelector(`.identity_{{ card_product.id }}_image`).src = selected_variant.featured_image.src;
+            document.querySelector(`.identity_{{ card_product.id }}_image`).srcset = selected_variant.featured_image.src;
+            document.querySelectorAll(`.identity_{{ card_product.id }}_image`)[1].srcset = selected_variant.featured_image.src;
+          }
         }
       
         let product_object = {{ card_product | json }};
@@ -436,7 +440,7 @@
 
         document.querySelector(`.identity_{{ card_product.id }}_add_to_cart`).addEventListener("click",function(e){
             e.preventDefault();
-            console.log(selected_variant);
+            // console.log(selected_variant);
             if(selected_variant) {
                async function addToCartAsync() {
                 try {
@@ -472,10 +476,8 @@
             } else if(e.target.dataset.optionPosition == 3) {
               selected_variant = product_variants.find(variant => variant.option1 == selected_variant.option1 && variant.option2 == selected_variant.option2 && variant.option3 == e.target.dataset.optionData);
             }
-
             
-
-            console.log(selected_variant);
+            // console.log(selected_variant);
             if(selected_variant)
               mainFunction(selected_variant);
           });
